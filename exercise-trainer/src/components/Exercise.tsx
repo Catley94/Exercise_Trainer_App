@@ -1,45 +1,139 @@
-import { IonRow, IonItem, IonLabel, IonInput, IonButton } from "@ionic/react";
+import {
+  IonRow,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonButton,
+  IonIcon,
+} from "@ionic/react";
+import { closeCircleOutline } from "ionicons/icons";
 import "./ExploreContainer.css";
-import React, { useState } from "react";
+import React, { ReactElement, useState, Dispatch, SetStateAction } from "react";
+import { InputChangeEventDetail } from "@ionic/core";
 
 interface ContainerProps {}
 
-const Exercise: React.FC<{ timer: number | string }> = (props) => {
-  const [number1, setState1] = useState(`${props.timer}`);
+const Exercise = (props: {
+  key: number;
+  collection: {
+    id: number;
+    exercises: { id: number; activity: string; time: number }[];
+  }[];
+  setCollection: Dispatch<
+    SetStateAction<
+      {
+        id: number;
+        exercises: { id: number; activity: string; time: number }[];
+      }[]
+    >
+  >;
+  setID: number;
+  id: number;
+  activity: string;
+  time: number;
+}) => {
+  const currentSet = props.collection.filter(
+    (exercise) => exercise.id === props.id
+  );
+  const plusClickHandler = () => {
+    let _cloneArr = props.collection.slice();
+    _cloneArr.map((set, i) => {
+      if (set.id == props.setID) {
+        set.exercises.map((exercise, index) => {
+          if (exercise.id == props.id) {
+            exercise.time += 1;
+          }
+        });
+      }
+    });
+    props.setCollection(_cloneArr);
+  };
+  const minusClickHandler = () => {
+    let _cloneArr = props.collection.slice();
+    _cloneArr.map((set, i) => {
+      if (set.id == props.setID) {
+        set.exercises.map((exercise, index) => {
+          if (exercise.id == props.id) {
+            if (exercise.time !== 0) {
+              exercise.time -= 1;
+            }
+          }
+        });
+      }
+    });
+    props.setCollection(_cloneArr);
+  };
+  const numberInputOnChange = (e: CustomEvent<InputChangeEventDetail>) => {
+    let _cloneArr = props.collection.slice();
+    _cloneArr.map((set, i) => {
+      if (set.id == props.setID) {
+        set.exercises.map((exercise, index) => {
+          if (exercise.id == props.id) {
+            exercise.time = e.detail.value ? parseInt(e.detail.value) : 0;
+          }
+        });
+      }
+    });
+    props.setCollection(_cloneArr);
+  };
+  const activityInputOnChange = (e: CustomEvent<InputChangeEventDetail>) => {
+    let _cloneArr = props.collection.slice();
+    _cloneArr.map((set, i) => {
+      if (set.id == props.setID) {
+        set.exercises.map((exercise, index) => {
+          if (exercise.id == props.id) {
+            exercise.activity = `${e.detail.value}`;
+          }
+        });
+      }
+    });
+    props.setCollection(_cloneArr);
+  };
+  const deleteClickHandler = () => {
+    let _cloneArr = props.collection.slice();
+    const currentExercise = props.collection.filter(
+      (exercise) => exercise.id === props.id
+    );
+    _cloneArr.map((set, i) => {
+      if (set.id == props.setID) {
+        set.exercises.map((exercise, index) => {
+          // const clickedExercise = set.exercises.filter(
+          //   (exercise1) => exercise1.id === props.id
+          // );
+          // console.log(clickedExercise);
+          // set.exercises.splice(clickedExercise, 1);
+          if (exercise.id == props.id) {
+            if (exercise.id > 0) {
+              set.exercises.splice(index, 1);
+            }
+          }
+        });
+      }
+    });
+    props.setCollection(_cloneArr);
+  };
   return (
     <IonRow>
       <IonItem>
-        <IonLabel>Walk</IonLabel>
+        <IonIcon
+          onClick={deleteClickHandler}
+          slot="start"
+          icon={closeCircleOutline}
+        />
         <IonInput
-          value={number1}
-          onIonChange={(event) => {
-            if (parseInt(event.detail.value!) < 0) {
-              console.log("Less than 0");
-              event.detail.value! = "0";
-            }
-            setState1(event.detail.value!);
-          }}
+          placeholder="Activity"
+          type="text"
+          value={props.activity}
+          onIonChange={activityInputOnChange}
         ></IonInput>
-        <IonButton
-          size="default"
-          onClick={() => {
-            var temp = parseInt(number1) + 1;
-            setState1(temp.toString());
-          }}
-        >
+        <IonInput
+          onIonChange={numberInputOnChange}
+          value={props.time}
+        ></IonInput>
+        <IonButton size="default" onClick={plusClickHandler}>
           +
         </IonButton>
-        <IonButton
-          size="default"
-          onClick={() => {
-            if (parseInt(number1) <= 0) {
-              console.log("Less than 0, button");
-            } else {
-              var temp = parseInt(number1) - 1;
-              setState1(temp.toString());
-            }
-          }}
-        >
+        <IonButton size="default" onClick={minusClickHandler}>
           -
         </IonButton>
       </IonItem>
