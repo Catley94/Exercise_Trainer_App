@@ -14,6 +14,8 @@ import {
   IonLabel,
   IonCardSubtitle,
   IonCardContent,
+  IonItem,
+  IonNote,
 } from "@ionic/react";
 import "./ExploreContainer.css";
 import React, { useState, useRef, useEffect } from "react";
@@ -25,17 +27,19 @@ interface ContainerProps {}
 
 const ExploreContainer: React.FC<ContainerProps> = () => {
   const [collection, setCollection] = useState([
-    { id: 0, exercises: [{ id: 0, activity: "walk", time: 0 }] },
+    { id: 0, exercises: [{ id: 0, activity: "Walk", time: 0 }] },
   ]);
   const [totalTime, setTotalTime] = useState(0);
+  const [_totalTime, _setTotalTime] = useState(totalTime);
+  const [_totalTimeClone, _setTotalTimeClone] = useState(totalTime);
   const [timerStarted, setTimerStarted] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState("minutes");
   const [currentTime, setCurrentTime] = useState(0);
+  const [exerciseIndex, setExerciseIndex] = useState(0);
 
   let clone = collection.slice();
   let editableClone = collection.slice();
   let setIndex = 0;
-  let exerciseIndex = 0;
 
   // useEffect(() => {
   //   setCurrentTime(totalTime);
@@ -77,6 +81,7 @@ const ExploreContainer: React.FC<ContainerProps> = () => {
       timer = setTimeout(() => {
         _tmpTime -= 1;
         setTotalTime(_tmpTime);
+        _setTotalTime(totalTime);
       }, 1000);
 
       if (_tmpTime === 0) {
@@ -94,6 +99,11 @@ const ExploreContainer: React.FC<ContainerProps> = () => {
       setTotalTime(tmpTime);
     }
   });
+
+  useEffect(() => {
+    _setTotalTime(totalTime);
+    _setTotalTimeClone(totalTime);
+  }, [timerStarted]);
 
   const secondsToTime = (secs: number) => {
     let hours = Math.floor(secs / (60 * 60));
@@ -129,23 +139,57 @@ const ExploreContainer: React.FC<ContainerProps> = () => {
         exercises: [
           {
             id: 0,
-            activity: "walk",
+            activity: "Walk",
             time: 0,
           },
         ],
       },
     ]);
   };
-  let each = () => {
-    collection.map((set, index) => {
-      set.exercises.map((exercise, i) => {
-        console.log(exercise.time);
-        return (
-          <IonCardTitle key={i}>
-            {index} {i}: {exercise.time}
-          </IonCardTitle>
-        );
+
+  const mapTimes = () => {
+    // For each Set
+    return collection.map((set, i) => {
+      // For each Exercise
+      return collection[i].exercises.map((exercise, index) => {
+        // Looping through exercises in a controlled way
+        if (exerciseIndex === index) {
+          // for example
+          // tt 240 === tt clone 300 - exercise.time 60 = 240
+          if (_totalTime === _totalTimeClone - exercise.time) {
+            _setTotalTimeClone(_totalTime);
+            setExerciseIndex((exerciseIndex) => (exerciseIndex += 1));
+          }
+          return (
+            <IonRow key={index} className="ion-text-center">
+              <IonCol size="12">
+                {/* <IonCardSubtitle>{exercise.time} seconds</IonCardSubtitle> */}
+                {/* <IonItem>
+                  <IonCardTitle>
+                    <b>{exercise.activity}</b>
+                  </IonCardTitle>
+                  <IonNote slot="end" color="success">
+                    {exercise.time} seconds
+                  </IonNote>
+                </IonItem> */}
+                <IonCard>
+                  <IonCardSubtitle className="ion-padding">
+                    Set {set.id + 1}
+                  </IonCardSubtitle>
+                  <IonCardSubtitle color="success" className="ion-padding">
+                    {exercise.time} seconds
+                  </IonCardSubtitle>
+                  <IonCardTitle className="ion-padding large-font">
+                    {exercise.activity}
+                  </IonCardTitle>
+                </IonCard>
+              </IonCol>
+            </IonRow>
+          );
+        }
       });
+      // set.exercises.map((exercise, index) => {
+      // });
     });
   };
   return (
@@ -172,23 +216,6 @@ const ExploreContainer: React.FC<ContainerProps> = () => {
               <IonCard>
                 <IonCardHeader>
                   <IonCardTitle>{secondsToTime(totalTime)}</IonCardTitle>
-                  {timerStarted ? (
-                    collection.map((set, i) => {
-                      return collection[i].exercises.map((exercise, index) => {
-                        return (
-                          <IonCardTitle key={index}>
-                            {exercise.activity}: {exercise.time}
-                          </IonCardTitle>
-                        );
-                      });
-                      // set.exercises.map((exercise, index) => {
-                      // });
-                    })
-                  ) : (
-                    <IonCardTitle>
-                      {collection[0].exercises[0].time}
-                    </IonCardTitle>
-                  )}
                 </IonCardHeader>
               </IonCard>
             </IonRow>
@@ -203,6 +230,7 @@ const ExploreContainer: React.FC<ContainerProps> = () => {
             </IonButton>
           </IonCol>
         </IonRow>
+        {timerStarted && mapTimes()}
         {!timerStarted && (
           <IonRow>
             <IonCol>

@@ -39,7 +39,7 @@ const Set = (props: {
       if (set.id == props.id) {
         set.exercises.push({
           id: set.exercises.length,
-          activity: "walk",
+          activity: "Run",
           time: 0,
         });
       }
