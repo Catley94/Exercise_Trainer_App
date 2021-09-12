@@ -30,6 +30,45 @@ const ExploreContainer: React.FC<ContainerProps> = () => {
   const [totalTime, setTotalTime] = useState(0);
   const [timerStarted, setTimerStarted] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState("minutes");
+  const [currentTime, setCurrentTime] = useState(0);
+
+  let clone = collection.slice();
+  let editableClone = collection.slice();
+  let setIndex = 0;
+  let exerciseIndex = 0;
+
+  // useEffect(() => {
+  //   setCurrentTime(totalTime);
+  //   let timer = setTimeout(() => {}, 1000);
+  //   timer = setTimeout(() => {
+  //     if (timerStarted) {
+  //       console.log("triggered1");
+  //       editableClone.map((set, i) => {
+  //         if (i === setIndex) {
+  //           // console.log(setIndex, exerciseIndex);
+  //           set.exercises.map((exercise, index) => {
+  //             // console.log("test");
+  //             if (index === exerciseIndex) {
+  //               setCurrentTime(exercise.time);
+  //               console.log("test");
+  //               exercise.time -= 1;
+  //             }
+  //             if (exercise.time === 0) {
+  //               console.log("exercise time == 0, increasing");
+  //               exerciseIndex += 1;
+  //               if (exerciseIndex > set.exercises.length) {
+  //                 console.log("exerciseIndex > length");
+  //                 exerciseIndex = 0;
+  //                 setIndex += 1;
+  //               }
+  //             }
+  //           });
+  //         }
+  //       });
+  //     }
+  //     setCollection(editableClone);
+  //   }, 1000);
+  // }, [currentTime]);
 
   useEffect(() => {
     let timer = setTimeout(() => {}, 1000);
@@ -97,7 +136,18 @@ const ExploreContainer: React.FC<ContainerProps> = () => {
       },
     ]);
   };
-
+  let each = () => {
+    collection.map((set, index) => {
+      set.exercises.map((exercise, i) => {
+        console.log(exercise.time);
+        return (
+          <IonCardTitle key={i}>
+            {index} {i}: {exercise.time}
+          </IonCardTitle>
+        );
+      });
+    });
+  };
   return (
     <IonContent>
       <IonGrid>
@@ -122,6 +172,23 @@ const ExploreContainer: React.FC<ContainerProps> = () => {
               <IonCard>
                 <IonCardHeader>
                   <IonCardTitle>{secondsToTime(totalTime)}</IonCardTitle>
+                  {timerStarted ? (
+                    collection.map((set, i) => {
+                      return collection[i].exercises.map((exercise, index) => {
+                        return (
+                          <IonCardTitle key={index}>
+                            {exercise.activity}: {exercise.time}
+                          </IonCardTitle>
+                        );
+                      });
+                      // set.exercises.map((exercise, index) => {
+                      // });
+                    })
+                  ) : (
+                    <IonCardTitle>
+                      {collection[0].exercises[0].time}
+                    </IonCardTitle>
+                  )}
                 </IonCardHeader>
               </IonCard>
             </IonRow>

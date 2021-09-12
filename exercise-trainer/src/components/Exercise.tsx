@@ -60,10 +60,12 @@ const Exercise = (props: {
       if (set.id == props.setID) {
         set.exercises.map((exercise, index) => {
           if (exercise.id == props.id) {
-            if (props.selectedUnit === "minutes") {
-              exercise.time -= 60;
-            } else if (props.selectedUnit === "seconds") {
-              exercise.time -= 1;
+            if (exercise.time !== 0) {
+              if (props.selectedUnit === "minutes") {
+                exercise.time -= 60;
+              } else if (props.selectedUnit === "seconds") {
+                exercise.time -= 1;
+              }
             }
           }
         });
