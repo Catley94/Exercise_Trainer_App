@@ -11,46 +11,72 @@ import {
   IonTitle,
 } from "@ionic/react";
 import "./ExploreContainer.css";
-import React, { useState, useRef } from "react";
-import Exercise from "./Exercise";
+import React, { useState, useRef, useEffect } from "react";
 
 import Set from "./Set";
+import { timer } from "ionicons/icons";
 
 interface ContainerProps {}
 
+const fromTime = new Date(0, 0, 0, 0, 10, 0, 0);
+
 const ExploreContainer: React.FC<ContainerProps> = () => {
+  const secondsToTime = (secs: number) => {
+    let hours = Math.floor(secs / (60 * 60));
+
+    let divisor_for_minutes = secs % (60 * 60);
+    let minutes = Math.floor(divisor_for_minutes / 60);
+
+    let divisor_for_seconds = divisor_for_minutes % 60;
+    let seconds = Math.ceil(divisor_for_seconds);
+    // console.group("Time");
+    // console.log("Hours: ", hours);
+    // console.log("Minutes: ", minutes);
+    // console.log("Seconds: ", seconds);
+    // console.groupEnd();
+
+    let obj = {
+      h: hours,
+      m: minutes,
+      s: seconds,
+    };
+
+    return `${obj.m} Minutes ${obj.s} Seconds remaining`;
+  };
+  const [isOn, setIsOn] = useState(false);
   const [collection, setCollection] = useState([
     { id: 0, exercises: [{ id: 0, activity: "walk", time: 0 }] },
   ]);
-  const [set1Time, setSet1Time] = useState(180);
+  const [totalTime, setTotalTime] = useState(0);
   const [timerStarted, setTimerStarted] = useState(false);
-  const [set2Time, setSet2Time] = useState(0);
-  const [set3Time, setSet3Time] = useState(0);
-  const [set4Time, setSet4Time] = useState(0);
-  const [set5Time, setSet5Time] = useState(0);
-  // const [contArray, setContArray] = useState([
-  //   <Set
-  //     key={collection.length}
-  //     collection={collection}
-  //     setCollection={setCollection}
-  //   />,
-  // ]);
-  const startCountDown = () => {
-    const secondsMode = true;
-    setTimerStarted(true);
-    let interval = setTimeout(() => {}, 1000);
-    //Depends on set1Time contents
-    if (secondsMode && set1Time >= 0) {
-      interval = setInterval(() => {
-        console.log("Interval");
-        // let _tmpTime = set1Time - 1;
-        setSet1Time((set1Time) => set1Time - 1);
+
+  useEffect(() => {
+    let timer = setTimeout(() => {}, 1000);
+    if (timerStarted) {
+      let _tmpTime = totalTime;
+      timer = setTimeout(() => {
+        _tmpTime -= 1;
+        setTotalTime(_tmpTime);
+        console.log(_tmpTime);
       }, 1000);
-    } else if (set1Time <= 0) {
-      console.log("Cleared timer");
-      setTimerStarted(true);
-      clearInterval(interval);
+      if (_tmpTime === 0) {
+        console.log("reached 0, stopping...");
+        clearTimeout(timer);
+        setTimerStarted(false);
+      }
+    } else {
+      let tmpTime = 0;
+      collection.map((set, i) => {
+        set.exercises.map((exercise, index) => {
+          tmpTime = tmpTime + exercise.time;
+        });
+      });
+      setTotalTime(tmpTime);
     }
+  });
+
+  const startStopCountDown = () => {
+    setTimerStarted((timerStarted) => (timerStarted = !timerStarted));
   };
   const createSet = () => {
     setCollection((collection) => [
@@ -72,38 +98,43 @@ const ExploreContainer: React.FC<ContainerProps> = () => {
     <IonContent>
       <IonGrid>
         <IonRow>
-          <IonCol size="6">
+          <IonCol size="12" className="ion-text-center">
             <IonHeader>
-              <IonTitle>{set1Time}</IonTitle>
+              <IonTitle>{secondsToTime(totalTime)}</IonTitle>
             </IonHeader>
           </IonCol>
-          <IonCol size="6">
-            <IonButton color="primary" onClick={startCountDown}>
-              {timerStarted ? "Stop" : "Start"}
+          <IonCol size="12" className="ion-text-center">
+            <IonButton
+              size="large"
+              color="primary"
+              onClick={startStopCountDown}
+            >
+              {timerStarted ? "Stop" : "Start Countdown"}
             </IonButton>
           </IonCol>
         </IonRow>
-        <IonRow>
-          <IonCol>
-            {/* {collection} */}
-            {collection &&
-              collection.map((set, index) => {
-                return (
-                  <Set
-                    key={index}
-                    collection={collection}
-                    setCollection={setCollection}
-                    id={collection[index].id}
-                  />
-                );
-              })}
-            <IonRow>
-              <IonButton color="primary" onClick={createSet}>
-                Add new Set
-              </IonButton>
-            </IonRow>
-          </IonCol>
-        </IonRow>
+        {!isOn && (
+          <IonRow>
+            <IonCol>
+              {collection &&
+                collection.map((set, index) => {
+                  return (
+                    <Set
+                      key={index}
+                      collection={collection}
+                      setCollection={setCollection}
+                      id={collection[index].id}
+                    />
+                  );
+                })}
+              <IonRow>
+                <IonButton color="primary" onClick={createSet}>
+                  Add new Set
+                </IonButton>
+              </IonRow>
+            </IonCol>
+          </IonRow>
+        )}
       </IonGrid>
     </IonContent>
   );

@@ -10,6 +10,7 @@ import { closeCircleOutline } from "ionicons/icons";
 import "./ExploreContainer.css";
 import React, { ReactElement, useState, Dispatch, SetStateAction } from "react";
 import { InputChangeEventDetail } from "@ionic/core";
+import { setConstantValue } from "typescript";
 
 interface ContainerProps {}
 
@@ -42,6 +43,7 @@ const Exercise = (props: {
         set.exercises.map((exercise, index) => {
           if (exercise.id == props.id) {
             exercise.time += 1;
+            // exercise.time += 60;
           }
         });
       }
@@ -56,6 +58,7 @@ const Exercise = (props: {
           if (exercise.id == props.id) {
             if (exercise.time !== 0) {
               exercise.time -= 1;
+              // exercise.time -= 60;
             }
           }
         });
