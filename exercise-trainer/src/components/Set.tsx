@@ -30,6 +30,7 @@ const Set = (props: {
     >
   >;
   id: number;
+  selectedUnit: string;
 }) => {
   const id = props.collection.length;
   const createExercise = () => {
@@ -63,6 +64,7 @@ const Set = (props: {
                   id={exercise.id}
                   activity={exercise.activity}
                   time={exercise.time}
+                  selectedUnit={props.selectedUnit}
                 />
               );
             })}

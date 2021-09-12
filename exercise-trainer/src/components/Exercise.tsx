@@ -32,6 +32,7 @@ const Exercise = (props: {
   id: number;
   activity: string;
   time: number;
+  selectedUnit: string;
 }) => {
   const currentSet = props.collection.filter(
     (exercise) => exercise.id === props.id
@@ -42,8 +43,11 @@ const Exercise = (props: {
       if (set.id == props.setID) {
         set.exercises.map((exercise, index) => {
           if (exercise.id == props.id) {
-            exercise.time += 1;
-            // exercise.time += 60;
+            if (props.selectedUnit === "minutes") {
+              exercise.time += 60;
+            } else if (props.selectedUnit === "seconds") {
+              exercise.time += 1;
+            }
           }
         });
       }
@@ -56,9 +60,10 @@ const Exercise = (props: {
       if (set.id == props.setID) {
         set.exercises.map((exercise, index) => {
           if (exercise.id == props.id) {
-            if (exercise.time !== 0) {
+            if (props.selectedUnit === "minutes") {
+              exercise.time -= 60;
+            } else if (props.selectedUnit === "seconds") {
               exercise.time -= 1;
-              // exercise.time -= 60;
             }
           }
         });
@@ -115,6 +120,15 @@ const Exercise = (props: {
     });
     props.setCollection(_cloneArr);
   };
+  // const calculateInputTime = () => {
+  //   let result = 0;
+  //   if (props.selectedUnit === "minutes") {
+  //     result = props.time % 60;
+  //   } else if (props.selectedUnit === "seconds") {
+  //     result = props.time;
+  //   }
+  //   return result;
+  // };
   return (
     <IonRow>
       <IonItem>
