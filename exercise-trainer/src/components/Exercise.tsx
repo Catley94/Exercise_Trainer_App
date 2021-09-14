@@ -60,11 +60,17 @@ const Exercise = (props: {
       if (set.id == props.setID) {
         set.exercises.map((exercise, index) => {
           if (exercise.id == props.id) {
-            if (exercise.time !== 0) {
+            if (exercise.time !== 0 && exercise.time > 0) {
               if (props.selectedUnit === "minutes") {
-                exercise.time -= 60;
+                if (exercise.time > 60) {
+                  exercise.time -= 60;
+                } else {
+                  exercise.time = 0;
+                }
               } else if (props.selectedUnit === "seconds") {
-                exercise.time -= 1;
+                if (exercise.time > 1) {
+                  exercise.time -= 1;
+                }
               }
             }
           }
@@ -79,6 +85,11 @@ const Exercise = (props: {
       if (set.id == props.setID) {
         set.exercises.map((exercise, index) => {
           if (exercise.id == props.id) {
+            if (e.detail.value) {
+              if (parseInt(e.detail.value) < 0) {
+                e.detail.value = "0";
+              }
+            }
             exercise.time = e.detail.value ? parseInt(e.detail.value) : 0;
           }
         });

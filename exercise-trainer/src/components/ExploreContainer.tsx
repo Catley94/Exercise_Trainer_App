@@ -21,7 +21,13 @@ import "./ExploreContainer.css";
 import React, { useState, useRef, useEffect } from "react";
 
 import Set from "./Set";
-import { calculatorOutline, constructOutline, timer } from "ionicons/icons";
+import {
+  calculatorOutline,
+  constructOutline,
+  logoSoundcloud,
+  timer,
+  walk,
+} from "ionicons/icons";
 
 interface ContainerProps {}
 
@@ -36,43 +42,18 @@ const ExploreContainer: React.FC<ContainerProps> = () => {
   const [selectedUnit, setSelectedUnit] = useState("minutes");
   const [currentTime, setCurrentTime] = useState(0);
   const [exerciseIndex, setExerciseIndex] = useState(0);
+  const [setIndex, setSetIndex] = useState(0);
+  const [soundPlayed, setSoundPlayed] = useState(false);
 
   let clone = collection.slice();
   let editableClone = collection.slice();
-  let setIndex = 0;
 
-  // useEffect(() => {
-  //   setCurrentTime(totalTime);
-  //   let timer = setTimeout(() => {}, 1000);
-  //   timer = setTimeout(() => {
-  //     if (timerStarted) {
-  //       console.log("triggered1");
-  //       editableClone.map((set, i) => {
-  //         if (i === setIndex) {
-  //           // console.log(setIndex, exerciseIndex);
-  //           set.exercises.map((exercise, index) => {
-  //             // console.log("test");
-  //             if (index === exerciseIndex) {
-  //               setCurrentTime(exercise.time);
-  //               console.log("test");
-  //               exercise.time -= 1;
-  //             }
-  //             if (exercise.time === 0) {
-  //               console.log("exercise time == 0, increasing");
-  //               exerciseIndex += 1;
-  //               if (exerciseIndex > set.exercises.length) {
-  //                 console.log("exerciseIndex > length");
-  //                 exerciseIndex = 0;
-  //                 setIndex += 1;
-  //               }
-  //             }
-  //           });
-  //         }
-  //       });
-  //     }
-  //     setCollection(editableClone);
-  //   }, 1000);
-  // }, [currentTime]);
+  const voice = {
+    walk: "<path/to/walk>",
+    run: "<path/to/run>",
+    jog: "<path/to/jog>",
+    beep: "<path/to/beep",
+  };
 
   useEffect(() => {
     let timer = setTimeout(() => {}, 1000);
@@ -88,6 +69,8 @@ const ExploreContainer: React.FC<ContainerProps> = () => {
         console.log("reached 0, stopping...");
         clearTimeout(timer);
         setTimerStarted(false);
+        setExerciseIndex(0);
+        setSetIndex(0);
       }
     } else {
       let tmpTime = 0;
@@ -129,6 +112,8 @@ const ExploreContainer: React.FC<ContainerProps> = () => {
   };
 
   const startStopCountDown = () => {
+    setExerciseIndex(0);
+    setSetIndex(0);
     setTimerStarted((timerStarted) => (timerStarted = !timerStarted));
   };
   const createSet = () => {
@@ -153,31 +138,53 @@ const ExploreContainer: React.FC<ContainerProps> = () => {
       // For each Exercise
       return collection[i].exercises.map((exercise, index) => {
         // Looping through exercises in a controlled way
-        if (exerciseIndex === index) {
+        console.log(setIndex, exerciseIndex);
+        if (exerciseIndex === index && setIndex === i) {
           // for example
           // tt 240 === tt clone 300 - exercise.time 60 = 240
           if (_totalTime === _totalTimeClone - exercise.time) {
             _setTotalTimeClone(_totalTime);
-            setExerciseIndex((exerciseIndex) => (exerciseIndex += 1));
+            if (exerciseIndex >= set.exercises.length - 1) {
+              setSetIndex((setIndex) => (setIndex += 1));
+              setExerciseIndex(0);
+            } else {
+              setExerciseIndex((exerciseIndex) => (exerciseIndex += 1));
+            }
+            setSoundPlayed(false);
+          }
+          if (!soundPlayed) {
+            // sound.play();
+            switch (exercise.activity) {
+              case "Walk":
+              case "walk":
+                // voice.walk.play()
+                break;
+              case "Run":
+              case "run":
+                // voice.run.play()
+                break;
+              case "Jog":
+              case "jog":
+                // voice.jog.play()
+                break;
+              default:
+                console.log("Unknown activity: ", exercise.activity);
+                // voice.beep.play();
+                break;
+            }
+            console.log(exercise.activity);
+            setSoundPlayed(true);
           }
           return (
             <IonRow key={index} className="ion-text-center">
               <IonCol size="12">
-                {/* <IonCardSubtitle>{exercise.time} seconds</IonCardSubtitle> */}
-                {/* <IonItem>
-                  <IonCardTitle>
-                    <b>{exercise.activity}</b>
-                  </IonCardTitle>
-                  <IonNote slot="end" color="success">
-                    {exercise.time} seconds
-                  </IonNote>
-                </IonItem> */}
                 <IonCard>
                   <IonCardSubtitle className="ion-padding">
                     Set {set.id + 1}
                   </IonCardSubtitle>
                   <IonCardSubtitle color="success" className="ion-padding">
-                    {exercise.time} seconds
+                    {Math.abs(_totalTimeClone - totalTime - exercise.time)}{" "}
+                    seconds
                   </IonCardSubtitle>
                   <IonCardTitle className="ion-padding large-font">
                     {exercise.activity}
@@ -188,8 +195,6 @@ const ExploreContainer: React.FC<ContainerProps> = () => {
           );
         }
       });
-      // set.exercises.map((exercise, index) => {
-      // });
     });
   };
   return (
