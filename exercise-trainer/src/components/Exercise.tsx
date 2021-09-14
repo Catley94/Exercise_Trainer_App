@@ -6,11 +6,11 @@ import {
   IonButton,
   IonIcon,
 } from "@ionic/react";
-import { closeCircleOutline } from "ionicons/icons";
 import "./ExploreContainer.css";
 import React, { ReactElement, useState, Dispatch, SetStateAction } from "react";
 import { InputChangeEventDetail } from "@ionic/core";
 import { setConstantValue } from "typescript";
+import { closeCircleOutline } from "ionicons/icons";
 
 interface ContainerProps {}
 
