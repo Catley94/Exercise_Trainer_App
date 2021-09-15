@@ -1,0 +1,6 @@
+{
+	"appId": "com.catley.exercisetrainer",
+	"appName": "exercise-trainer",
+	"webDir": "build",
+	"bundledWebRuntime": false
+}

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">exercise-trainer</string>
+    <string name="title_activity_main">exercise-trainer</string>
+    <string name="package_name">com.catley.exercisetrainer</string>
+    <string name="custom_url_scheme">com.catley.exercisetrainer</string>
+</resources>
