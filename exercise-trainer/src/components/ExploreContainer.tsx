@@ -217,14 +217,13 @@ const ExploreContainer: React.FC<ContainerProps> = () => {
         )}
         <IonRow>
           <IonCol size="12" className="ion-text-center">
-            <IonRow>
-              <IonCard>
-                <IonCardHeader>
-                  <IonCardTitle>{secondsToTime(totalTime)}</IonCardTitle>
-                </IonCardHeader>
-              </IonCard>
-            </IonRow>
+            <IonCard>
+              <IonCardHeader>
+                <IonCardTitle>{secondsToTime(totalTime)}</IonCardTitle>
+              </IonCardHeader>
+            </IonCard>
           </IonCol>
+
           <IonCol size="12" className="ion-text-center">
             <IonButton
               size="large"
