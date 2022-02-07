@@ -52,7 +52,7 @@ const ExploreContainer: React.FC<ContainerProps> = () => {
     walk: "<path/to/walk>",
     run: "<path/to/run>",
     jog: "<path/to/jog>",
-    beep: "<path/to/beep",
+    beep: "../sounds/403012__inspectorj__ui-confirmation-alert-a5.wav",
   };
 
   useEffect(() => {
